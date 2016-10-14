@@ -69,10 +69,16 @@ gulp.task('lint:test', () => {
     .pipe(gulp.dest('test/spec'));
 });
 
+gulp.task('htmlhint', () => {
+  return gulp.src('app/**/*.html')
+    .pipe($.htmlhint())
+    .pipe($.htmlhint.reporter());
+});
+
 <% if (includeBabel) { -%>
-gulp.task('html', ['styles', 'scripts'], () => {
+gulp.task('html', ['htmlhint', 'styles', 'scripts'], () => {
 <% } else { -%>
-gulp.task('html', ['styles'], () => {
+gulp.task('html', ['htmlhint', 'styles'], () => {
 <% } -%>
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
@@ -125,7 +131,7 @@ gulp.task('extras', () => {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('serve', () => {
-  runSequence(['clean', 'wiredep'], ['styles'<% if (includeBabel) { %>, 'scripts'<% } %>, 'fonts'], () => {
+  runSequence(['clean', 'wiredep'], ['htmlhint', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>, 'fonts'], () => {
     browserSync({
       notify: false,
       port: 9000,
@@ -146,6 +152,7 @@ gulp.task('serve', () => {
       '.tmp/fonts/**/*'
     ]).on('change', reload);
 
+	gulp.watch('app/**/*.html', ['htmlhint']);
     gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
   <% if (includeBabel) { -%>
     gulp.watch('app/scripts/**/*.js', ['scripts']);
