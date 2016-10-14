@@ -20,8 +20,9 @@
     "gulp-htmlmin": "^3.0.0",
     "gulp-if": "^2.0.0",
     "gulp-imagemin": "^3.0.1",
-    "gulp-load-plugins": "^1.2.4",
-	"gulp-newer": "^1.2.0",<% if (includeBabel || includeSass) { %>
+    "gulp-newer": "^1.2.0",
+    "gulp-nunjucks-render": "^2.0.0",
+	"gulp-load-plugins": "^1.2.4",<% if (includeBabel || includeSass) { %>
     "gulp-plumber": "^1.0.1",<% } if (includeSass) { %>
     "gulp-preprocess": "^2.0.0",
     "gulp-sass": "^2.0.0",<% } %>
