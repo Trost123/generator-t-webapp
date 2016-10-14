@@ -80,7 +80,8 @@ gulp.task('html', ['styles'], () => {
 });
 
 gulp.task('images', () => {
-  return gulp.src('app/images/**/*')
+  return gulp.src(require('main-bower-files')('**/*.{png,gif,jpg}', function (err) {})
+      .concat(['app/images/**/*']))
     .pipe($.cache($.imagemin()))
     .pipe(gulp.dest('dist/images'));
 });
