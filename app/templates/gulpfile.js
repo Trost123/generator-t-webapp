@@ -85,6 +85,21 @@ gulp.task('images', () => {
     .pipe(gulp.dest('dist/images'));
 });
 
+gulp.task('sprites', () => {
+  var spriteData =
+      gulp.src('app/sprites/*.*')
+          .pipe($.spritesmith({
+            imgName: 'sprite.png',
+            cssName: 'sprite.scss',
+            imgPath: '../images/sprite.png',
+            cssVarMap: function (sprite) {
+              sprite.name = 'icon-' + sprite.name;
+            }
+          }));
+  var imgStream = spriteData.img.pipe(gulp.dest('app/images'));
+  var scssStream = spriteData.css.pipe(gulp.dest('app/styles/tools'));
+});
+
 gulp.task('fonts', () => {
   return gulp.src(require('main-bower-files')('**/*.{eot,svg,ttf,woff,woff2}', function (err) {})
     .concat('app/fonts/**/*'))
