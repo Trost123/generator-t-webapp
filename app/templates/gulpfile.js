@@ -5,6 +5,7 @@ const browserSync = require('browser-sync');
 const del = require('del');
 const wiredep = require('wiredep').stream;
 const runSequence = require('run-sequence');
+const critical = require('critical');
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -214,9 +215,31 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
+gulp.task('critical',['build'] , function (cb) {
+
+  critical.generate({
+    inline: true,
+    base: 'dist/',
+    src: 'index.html',
+    dest: 'dist/index.html',
+    minify: true,
+    //width: 320,
+    //height: 480
+    dimensions: [{
+      height: 900,
+      width: 1200
+    }, {
+      height: 320,
+      width: 480
+    }],
+     pathPrefix: './' ,
+     ignore: ['@font-face']
+  });
+});
+
 gulp.task('default', () => {
   return new Promise(resolve => {
     dev = false;
-    runSequence(['clean', 'wiredep'], 'build', resolve);
+    runSequence(['clean', 'wiredep', 'build'] 'critical', resolve);
   });
 });
