@@ -20,6 +20,7 @@
     "gulp-imagemin": "^3.0.1",
     "gulp-load-plugins": "^1.2.4",<% if (includeBabel || includeSass) { %>
     "gulp-plumber": "^1.0.1",<% } if (includeSass) { %>
+    "gulp-preprocess": "^2.0.0",
     "gulp-sass": "^2.0.0",<% } %>
     "gulp-size": "^2.1.0",
     "gulp-sourcemaps": "^1.5.0",
