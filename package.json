@@ -1,10 +1,10 @@
 {
-  "name": "generator-webapp",
+  "name": "generator-t-webapp",
   "version": "2.2.0",
   "description": "Scaffold out a front-end web app",
   "license": "BSD-2-Clause",
-  "repository": "yeoman/generator-webapp",
-  "author": "The Yeoman Team",
+  "repository": "Trost123/generator-t-webapp",
+  "author": "The Yeoman Team (modified my Trost)",
   "main": "app/index.js",
   "engines": {
     "node": ">=4",
