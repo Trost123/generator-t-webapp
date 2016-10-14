@@ -13,6 +13,7 @@ var dev = true;
 gulp.task('styles', () => {<% if (includeSass) { %>
   return gulp.src('app/styles/*.scss')
     .pipe($.plumber())
+    .pipe($.preprocess({context: {DEV: dev}}))
     .pipe($.sourcemaps.init())
     .pipe($.sass.sync({
       outputStyle: 'expanded',
