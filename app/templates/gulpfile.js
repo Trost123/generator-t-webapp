@@ -219,6 +219,6 @@ gulp.task('critical',['build'] , function (cb) {
 
 gulp.task('default', () => {
   return new Promise(resolve => {
-    runSequence(['clean', 'wiredep', 'build'] 'critical', resolve);
+    runSequence(['clean', 'wiredep', 'build'], 'critical', resolve);
   });
 });
