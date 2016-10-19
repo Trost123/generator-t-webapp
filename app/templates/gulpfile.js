@@ -55,6 +55,7 @@ gulp.task('lint', () => {
   })
     .pipe(gulp.dest('app/scripts'));
 });
+
 gulp.task('lint:test', () => {
   return lint('test/spec/**/*.js', {
     fix: true,
@@ -102,7 +103,7 @@ gulp.task('html', ['nunjucks', 'htmlhint', 'styles'], () => {
 
 gulp.task('images', () => {
   return gulp.src(require('main-bower-files')('**/*.{png,gif,jpg}', function (err) {})
-      .concat(['app/images/**/*']))
+    .concat(['app/images/**/*']))
     .pipe($.cache($.imagemin()))
     .pipe(gulp.dest('dist/images'));
 });
@@ -166,7 +167,7 @@ gulp.task('serve', () => {
 
   gulp.watch('app/**/*.html', ['nunjucks']);
   gulp.watch('app/**/*.njk', ['nunjucks']);
-  gulp.watch('.tml/*.html', ['htmlhint']);
+  gulp.watch('.tmp/*.html', ['htmlhint']);
     gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
   <% if (includeBabel) { -%>
     gulp.watch('app/scripts/**/*.js', ['scripts']);
@@ -249,7 +250,7 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
-gulp.task('critical',['build'] , function (cb) {
+gulp.task('critical', ['build'], function (cb) {
 
   critical.generate({
     inline: true,
