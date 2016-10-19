@@ -73,6 +73,7 @@ gulp.task('lint:test', () => {
 
 gulp.task('nunjucks', () => {
   return gulp.src('app/*.njk')
+    .pipe($.plumber())
     .pipe($.nunjucksRender({
       path: 'app'
     }))
@@ -152,7 +153,8 @@ gulp.task('serve', () => {
         routes: {
           '/bower_components': 'bower_components'
         }
-      }
+      },
+    browser: 'chrome'
     });
 
     gulp.watch([
