@@ -11,6 +11,7 @@ const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 
 var dev = true;
+
 gulp.task('styles', () => {<% if (includeSass) { %>
   return gulp.src('app/styles/*.scss')
     .pipe($.plumber())
@@ -98,7 +99,8 @@ gulp.task('html', ['nunjucks', 'htmlhint', 'styles'], () => {
     .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
     .pipe($.if('*.css', $.rev()))
     .pipe($.revReplace())
-    .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
+    .pipe($.if('*.html', $.replace('../images/', 'images/')))
+    .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true, conservativeCollapse: true})))
     .pipe(gulp.dest('dist'));
 });
 
