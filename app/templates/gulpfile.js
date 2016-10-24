@@ -96,6 +96,7 @@ gulp.task('html', ['nunjucks', 'htmlhint', 'styles'], () => {
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
     .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.js', $.rev()))
+    .pipe($.if('*.css', $.replace('../../images/', '../images/')))
     .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
     .pipe($.if('*.css', $.rev()))
     .pipe($.revReplace())
@@ -256,7 +257,7 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
 
 gulp.task('critical', ['build'], function (cb) {
 
-  critical.generate({
+  return critical.generate({
     inline: true,
     base: 'dist/',
     src: 'index.html',
