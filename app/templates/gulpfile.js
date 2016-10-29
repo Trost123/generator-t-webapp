@@ -173,7 +173,8 @@ gulp.task('serve', () => {
   gulp.watch('app/**/*.html', ['nunjucks']);
   gulp.watch('app/**/*.njk', ['nunjucks']);
   gulp.watch('.tmp/*.html', ['htmlhint']);
-    gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
+  gulp.watch('app/sprites/*', ['sprites']);
+  gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
   <% if (includeBabel) { -%>
     gulp.watch('app/scripts/**/*.js', ['scripts']);
   <% } -%>
