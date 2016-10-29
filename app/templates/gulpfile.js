@@ -74,11 +74,11 @@ gulp.task('lint:test', () => {
 
 gulp.task('nunjucks', () => {
   return gulp.src('app/*.njk')
-    .pipe($.changed('.tmp', {extension: '.html'}))
     .pipe($.plumber())
     .pipe($.nunjucksRender({
       path: 'app'
     }))
+    .pipe($.cached('njkCache'))
     .pipe(gulp.dest('.tmp'))
     .pipe(reload({stream: true}));
 });
