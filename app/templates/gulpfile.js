@@ -79,20 +79,18 @@ gulp.task('nunjucks', () => {
       path: 'app'
     }))
     .pipe($.cached('njkCache'))
+    .pipe($.print(function(filepath) {
+      return "njk compiled: " + filepath;
+    }))
     .pipe(gulp.dest('.tmp'))
-    .pipe(reload({stream: true}));
-});
-
-gulp.task('htmlhint', () => {
-  return gulp.src('.tmp/*.html')
     .pipe($.htmlhint())
     .pipe($.htmlhint.reporter());
 });
 
 <% if (includeBabel) { -%>
-gulp.task('html', ['nunjucks', 'htmlhint', 'styles', 'scripts'], () => {
+gulp.task('html', ['nunjucks', 'styles', 'scripts'], () => {
 <% } else { -%>
-gulp.task('html', ['nunjucks', 'htmlhint', 'styles'], () => {
+gulp.task('html', ['nunjucks', 'styles'], () => {
 <% } -%>
   return gulp.src(['app/*.html', '.tmp/*.html'])
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
@@ -149,7 +147,7 @@ gulp.task('extras', () => {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('serve', () => {
-  runSequence(['clean', 'wiredep'], ['nunjucks', 'htmlhint', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>, 'fonts'], () => {
+  runSequence(['clean', 'wiredep'], ['nunjucks', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>, 'fonts'], () => {
     browserSync({
       notify: false,
       port: 9000,
@@ -171,9 +169,7 @@ gulp.task('serve', () => {
       '.tmp/fonts/**/*'
     ]).on('change', reload);
 
-  gulp.watch('app/**/*.html', ['nunjucks']);
-  gulp.watch('app/**/*.njk', ['nunjucks']);
-  gulp.watch('.tmp/*.html', ['htmlhint']);
+  gulp.watch('app/**/*.njk', ['nunjucks', reload]);
   gulp.watch('app/sprites/*', ['sprites']);
   gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
   <% if (includeBabel) { -%>
