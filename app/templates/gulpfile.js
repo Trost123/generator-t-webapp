@@ -84,7 +84,8 @@ gulp.task('nunjucks', () => {
     }))
     .pipe(gulp.dest('.tmp'))
     .pipe($.htmlhint())
-    .pipe($.htmlhint.reporter());
+    .pipe($.htmlhint.reporter())
+	.pipe(reload({stream: true}));
 });
 
 <% if (includeBabel) { -%>
@@ -169,7 +170,7 @@ gulp.task('serve', () => {
       '.tmp/fonts/**/*'
     ]).on('change', reload);
 
-  gulp.watch('app/**/*.njk', ['nunjucks', reload]);
+  gulp.watch('app/**/*.njk', ['nunjucks']);
   gulp.watch('app/sprites/*', ['sprites']);
   gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
   <% if (includeBabel) { -%>
