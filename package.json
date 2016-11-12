@@ -1,6 +1,6 @@
 {
   "name": "generator-t-webapp",
-  "version": "2.2.0",
+  "version": "2.3.2",
   "description": "Scaffold out a front-end web app",
   "license": "BSD-2-Clause",
   "repository": "Trost123/generator-t-webapp",

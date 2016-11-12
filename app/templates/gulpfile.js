@@ -1,7 +1,7 @@
 // generated on <%= date %> using <%= name %> <%= version %>
 const gulp = require('gulp');
 const gulpLoadPlugins = require('gulp-load-plugins');
-const browserSync = require('browser-sync');
+const browserSync = require('browser-sync').create();
 const del = require('del');
 const wiredep = require('wiredep').stream;
 const runSequence = require('run-sequence');
@@ -46,32 +46,21 @@ gulp.task('scripts', () => {
 });
 <% } -%>
 
-function lint(files, options) {
+function lint(files) {
   return gulp.src(files)
+    .pipe($.eslint({ fix: true }))
     .pipe(reload({stream: true, once: true}))
-    .pipe($.eslint(options))
     .pipe($.eslint.format())
     .pipe($.if(!browserSync.active, $.eslint.failAfterError()));
 }
 
 gulp.task('lint', () => {
-  return lint('app/scripts/**/*.js', {
-    fix: true
-  })
+  return lint('app/scripts/**/*.js')
     .pipe(gulp.dest('app/scripts'));
 });
 
 gulp.task('lint:test', () => {
-  return lint('test/spec/**/*.js', {
-    fix: true,
-    env: {
-<% if (testFramework === 'mocha') { -%>
-      mocha: true
-<% } else if (testFramework === 'jasmine') { -%>
-      jasmine: true
-<% } -%>
-    }
-  })
+  return lint('test/spec/**/*.js')
     .pipe(gulp.dest('test/spec'));
 });
 
@@ -169,7 +158,7 @@ gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('serve', () => {
   runSequence(['wiredep'], ['nunjucks', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>, 'bowerFonts'], () => {
-    browserSync({
+    browserSync.init({
       notify: false,
       port: 9000,
       server: {
@@ -183,24 +172,24 @@ gulp.task('serve', () => {
 
     gulp.watch([
       'app/*.html',
-  <% if (!includeBabel) { -%>
+<% if (!includeBabel) { -%>
       'app/scripts/**/*.js',
-  <% } -%>
+<% } -%>
       'app/images/**/*',
     ]).on('change', reload);
 
   gulp.watch('app/**/*.njk', ['nunjucks']);
   gulp.watch('app/sprites/*', ['sprites']);
   gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
-  <% if (includeBabel) { -%>
+<% if (includeBabel) { -%>
     gulp.watch('app/scripts/**/*.js', ['scripts']);
-  <% } -%>
+<% } -%>
     gulp.watch('bower.json', ['wiredep', 'bowerFonts']);
   });
 });
 
 gulp.task('serve:dist', ['default'], () => {
-  browserSync({
+  browserSync.init({
     notify: false,
     port: 9000,
     server: {
@@ -214,7 +203,7 @@ gulp.task('serve:test', ['scripts'], () => {
 <% } else { -%>
 gulp.task('serve:test', () => {
 <% } -%>
-  browserSync({
+  browserSync.init({
     notify: false,
     port: 9000,
     ui: false,
@@ -242,6 +231,7 @@ gulp.task('serve:test', () => {
 gulp.task('wiredep', () => {
 <% if (includeSass) { %>
   gulp.src('app/styles/*.scss')
+    .pipe($.filter(file => file.stat && file.stat.size))
     .pipe(wiredep({
       ignorePath: /^(\.\.\/)+/
     }))
