@@ -5,14 +5,15 @@ const browserSync = require('browser-sync');
 const del = require('del');
 const wiredep = require('wiredep').stream;
 const runSequence = require('run-sequence');
-const critical = require('critical');
+const critical = require('critical').stream;
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 
 var dev = true;
 
-gulp.task('styles', () => {<% if (includeSass) { %>
+gulp.task('styles', () => {
+  <% if (includeSass) { %>
   return gulp.src('app/styles/*.scss')
     .pipe($.plumber())
     .pipe($.preprocess({context: {DEV: dev}}))
@@ -21,9 +22,11 @@ gulp.task('styles', () => {<% if (includeSass) { %>
       outputStyle: 'expanded',
       precision: 10,
       includePaths: ['.']
-    }).on('error', $.sass.logError))<% } else { %>
+    }).on('error', $.sass.logError))
+    <% } else { %>
   return gulp.src('app/styles/*.css')
-    .pipe($.sourcemaps.init())<% } %>
+    .pipe($.sourcemaps.init())
+    <% } %>
     .pipe($.autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
     .pipe($.sourcemaps.write())
     .pipe(gulp.dest('.tmp/styles'))
@@ -85,7 +88,7 @@ gulp.task('nunjucks', () => {
     .pipe(gulp.dest('.tmp'))
     .pipe($.htmlhint())
     .pipe($.htmlhint.reporter())
-	.pipe(reload({stream: true}));
+    .pipe(reload({stream: true}));
 });
 
 <% if (includeBabel) { -%>
@@ -99,6 +102,22 @@ gulp.task('html', ['nunjucks', 'styles'], () => {
     .pipe($.if('*.css', $.replace('../../images/', '../images/')))
     .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
     .pipe($.if('*.html', $.replace('../images/', 'images/')))
+    .pipe($.if('index.html', critical({
+      inline: true,
+      minify: true,
+      base: 'dist/',
+      //width: 320,
+      //height: 480
+      dimensions: [{
+        height: 900,
+        width: 1200
+      }, {
+        height: 320,
+        width: 480
+      }],
+      pathPrefix: './' ,
+      ignore: ['@font-face']
+    })))
     .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true, conservativeCollapse: true})))
     .pipe(gulp.dest('dist'));
 });
@@ -145,7 +164,7 @@ gulp.task('extras', () => {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('serve', () => {
-  runSequence(['clean', 'wiredep'], ['nunjucks', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>, 'fonts'], () => {
+  runSequence(['wiredep'], ['nunjucks', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>, 'fonts'], () => {
     browserSync({
       notify: false,
       port: 9000,
@@ -218,7 +237,8 @@ gulp.task('serve:test', () => {
 });
 
 // inject bower components
-gulp.task('wiredep', () => {<% if (includeSass) { %>
+gulp.task('wiredep', () => {
+<% if (includeSass) { %>
   gulp.src('app/styles/*.scss')
     .pipe(wiredep({
       ignorePath: /^(\.\.\/)+/
@@ -226,7 +246,8 @@ gulp.task('wiredep', () => {<% if (includeSass) { %>
     .pipe(gulp.dest('app/styles'));
 <% } %>
   gulp.src('app/layouts/*.njk')
-    .pipe(wiredep({<% if (includeBootstrap) { if (includeSass) { %>
+    .pipe(wiredep({
+    <% if (includeBootstrap) { if (includeSass) { %>
       exclude: ['bootstrap-sass'],<% } else { %>
       exclude: ['bootstrap.js'],<% }} %>
       ignorePath: /^(\.\.\/)*\.\./,
@@ -251,31 +272,9 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
-gulp.task('critical', ['build'], function (cb) {
-
-  return critical.generate({
-    inline: true,
-    base: 'dist/',
-    src: 'index.html',
-    dest: 'dist/index.html',
-    minify: true,
-    //width: 320,
-    //height: 480
-    dimensions: [{
-      height: 900,
-      width: 1200
-    }, {
-      height: 320,
-      width: 480
-    }],
-     pathPrefix: './' ,
-     ignore: ['@font-face']
-  });
-});
-
 gulp.task('default', () => {
   return new Promise(resolve => {
     dev = false;
-    runSequence(['clean', 'wiredep'], 'critical', resolve);
+    runSequence(['clean', 'wiredep'], 'build', resolve);
   });
 });
