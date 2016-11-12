@@ -19,6 +19,7 @@
     "gulp-cached": "^1.1.0",
     "gulp-cssnano": "^2.0.0",
     "gulp-eslint": "^3.0.0",
+    "gulp-hash-src": "^0.1.6",
     "gulp-htmlhint": "^0.3.1",
     "gulp-htmlmin": "^3.0.0",
     "gulp-if": "^2.0.0",
@@ -26,7 +27,7 @@
     "gulp-load-plugins": "^1.2.4",
     "gulp-newer": "^1.2.0",
     "gulp-nunjucks-render": "^2.0.0",
-	<% if (includeBabel || includeSass) { %>
+    <% if (includeBabel || includeSass) { %>
     "gulp-plumber": "^1.0.1",
     <% } if (includeSass) { %>
     "gulp-preprocess": "^2.0.0",
