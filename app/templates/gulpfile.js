@@ -247,7 +247,7 @@ gulp.task('wiredep', () => {
     }))
     .pipe(gulp.dest('app/styles'));
 <% } %>
-  gulp.src('app/layouts/*.njk')
+  gulp.src('app/templates/*.njk')
     .pipe(wiredep({
     <% if (includeBootstrap) { if (includeSass) { %>
       exclude: ['bootstrap-sass'],<% } else { %>
@@ -267,7 +267,7 @@ gulp.task('wiredep', () => {
          }
        }
     }))
-    .pipe(gulp.dest('app/layouts'));
+    .pipe(gulp.dest('app/templates'));
 });
 
 gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
