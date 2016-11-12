@@ -145,11 +145,14 @@ gulp.task('sprites', () => {
   var scssStream = spriteData.css.pipe(gulp.dest('app/styles/tools'));
 });
 
-gulp.task('fonts', () => {
-  return gulp.src(require('main-bower-files')('**/*.{eot,svg,ttf,woff,woff2}', function (err) {})
-    .concat('app/fonts/**/*'))
-    .pipe($.if(dev, $.newer('.tmp/fonts')))
-    .pipe($.if(dev, gulp.dest('.tmp/fonts'), gulp.dest('dist/fonts')));
+gulp.task('bowerFonts', () => {
+  return gulp.src(require('main-bower-files')('**/*.{eot,svg,ttf,woff,woff2}', function (err) {}))
+    .pipe(gulp.dest('app/fonts/bowerFonts'))
+});
+
+gulp.task('fonts', ['bowerFonts'], () => {
+  return gulp.src('app/fonts/**/*')
+    .pipe(gulp.dest('dist/fonts'));
 });
 
 gulp.task('extras', () => {
@@ -165,7 +168,7 @@ gulp.task('extras', () => {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('serve', () => {
-  runSequence(['wiredep'], ['nunjucks', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>, 'fonts'], () => {
+  runSequence(['wiredep'], ['nunjucks', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>, 'bowerFonts'], () => {
     browserSync({
       notify: false,
       port: 9000,
@@ -184,7 +187,6 @@ gulp.task('serve', () => {
       'app/scripts/**/*.js',
   <% } -%>
       'app/images/**/*',
-      '.tmp/fonts/**/*'
     ]).on('change', reload);
 
   gulp.watch('app/**/*.njk', ['nunjucks']);
@@ -193,8 +195,7 @@ gulp.task('serve', () => {
   <% if (includeBabel) { -%>
     gulp.watch('app/scripts/**/*.js', ['scripts']);
   <% } -%>
-    gulp.watch('app/fonts/**/*', ['fonts']);
-    gulp.watch('bower.json', ['wiredep', 'fonts']);
+    gulp.watch('bower.json', ['wiredep', 'bowerFonts']);
   });
 });
 
