@@ -87,9 +87,7 @@ gulp.task('html', ['nunjucks', 'styles'], () => {
 <% } -%>
   return gulp.src(['app/*.html', '.tmp/*.html'])
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
-    .pipe($.if('*.js', $.uglify()))
-    .pipe($.if('*.css', $.replace('../../images/', '../images/')))
-    .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
+    .pipe($.if('*/main.css', $.replace('../../images/', '../images/')))
     .pipe($.if('*.html', $.replace('../images/', 'images/')))
     .pipe($.if('index.html', critical({
       inline: true,
@@ -107,7 +105,6 @@ gulp.task('html', ['nunjucks', 'styles'], () => {
       pathPrefix: './' ,
       ignore: ['@font-face']
     })))
-    .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true, conservativeCollapse: true})))
     .pipe(gulp.dest('dist'));
 });
 
