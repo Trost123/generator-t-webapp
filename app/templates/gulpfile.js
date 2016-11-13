@@ -17,7 +17,7 @@ gulp.task('styles', () => {
   return gulp.src('app/styles/*.scss')
     .pipe($.plumber())
     .pipe($.preprocess({context: {DEV: dev}}))
-    .pipe($.sourcemaps.init())
+    .pipe($.if(dev, $.sourcemaps.init()))
     .pipe($.sass.sync({
       outputStyle: 'expanded',
       precision: 10,
@@ -25,10 +25,10 @@ gulp.task('styles', () => {
     }).on('error', $.sass.logError))
     <% } else { %>
   return gulp.src('app/styles/*.css')
-    .pipe($.sourcemaps.init())
+    .pipe($.if(dev, $.sourcemaps.init()))
     <% } %>
     .pipe($.autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
-    .pipe($.sourcemaps.write())
+    .pipe($.if(dev, $.sourcemaps.write()))
     .pipe(gulp.dest('.tmp/styles'))
     .pipe(reload({stream: true}));
 });
@@ -37,9 +37,9 @@ gulp.task('styles', () => {
 gulp.task('scripts', () => {
   return gulp.src('app/scripts/**/*.js')
     .pipe($.plumber())
-    .pipe($.sourcemaps.init())
+    .pipe($.if(dev, $.sourcemaps.init()))
     .pipe($.babel())
-    .pipe($.sourcemaps.write('.'))
+    .pipe($.if(dev, $.sourcemaps.write('.')))
     .pipe(gulp.dest('.tmp/scripts'))
     .pipe(reload({stream: true}));
 });
