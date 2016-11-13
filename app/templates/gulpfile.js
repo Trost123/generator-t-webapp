@@ -87,6 +87,14 @@ gulp.task('html', ['nunjucks', 'styles'], () => {
 <% } -%>
   return gulp.src(['app/*.html', '.tmp/*.html'])
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
+    .pipe($.if('*.css', $.cached('CSScache')))
+    .pipe($.if('*.js', $.cached('JScache')))
+    .pipe($.if('*.css', $.print(function(filepath) {
+      return "CSS combined: " + filepath;
+    })))
+    .pipe($.if('*.js', $.print(function(filepath) {
+      return "JS compiled: " + filepath;
+    })))
     .pipe($.if('*/main.css', $.replace('../../images/', '../images/')))
     .pipe($.if('*.html', $.replace('../images/', 'images/')))
     .pipe($.if('index.html', critical({
