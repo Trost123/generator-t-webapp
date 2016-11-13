@@ -6,7 +6,6 @@ const del = require('del');
 const wiredep = require('wiredep').stream;
 const runSequence = require('run-sequence');
 const critical = require('critical').stream;
-const hash_src = require("gulp-hash-src");
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -264,16 +263,9 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
-gulp.task("hash", function() {
-  return gulp.src(["dist/*.html", "dist/styles/*.css"])
-    .pipe(hash_src({build_dir: "dist", src_path: "dist"}))
-    .pipe($.if('*.css', gulp.dest("dist/styles")))
-    .pipe($.if('*.html', gulp.dest("dist/")))
-});
-
 gulp.task('default', () => {
   return new Promise(resolve => {
     dev = false;
-    runSequence(['clean', 'wiredep'], 'build', 'hash', resolve);
+    runSequence(['clean', 'wiredep'], 'build' resolve);
   });
 });
