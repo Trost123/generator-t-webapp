@@ -6,13 +6,22 @@ const del = require('del');
 const wiredep = require('wiredep').stream;
 const runSequence = require('run-sequence');
 const critical = require('critical').stream;
+const ftp = require( 'vinyl-ftp' );
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 
 var dev = true;
+var wa_mode = false;
 
 gulp.task('styles', () => {
+  var conn = ftp.create( {
+    host:     'kinohata.ftp.ukraine.com.ua',
+    user:     'kinohata_tehavto',
+    password: 'dqvtrk94',
+    parallel: 10,
+  } );
+
   <% if (includeSass) { %>
   return gulp.src('app/styles/*.scss')
     .pipe($.plumber())
@@ -27,9 +36,11 @@ gulp.task('styles', () => {
   return gulp.src('app/styles/*.css')
     .pipe($.if(dev, $.sourcemaps.init()))
     <% } %>
+    .pipe($.if(!dev, $.replace('../../images/', '../images/')))
     .pipe($.autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
     .pipe($.if(dev, $.sourcemaps.write()))
-    .pipe(gulp.dest('.tmp/styles'))
+    .pipe($.if(wa_mode, conn.dest( '/wa-data/public/shop/themes/techauto/css' )))
+    .pipe(gulp.dest(wa_mode ? 'dist_wa/styles' : '.tmp/styles'))
     .pipe(reload({stream: true}));
 });
 
@@ -40,7 +51,7 @@ gulp.task('scripts', () => {
     .pipe($.if(dev, $.sourcemaps.init()))
     .pipe($.babel())
     .pipe($.if(dev, $.sourcemaps.write('.')))
-    .pipe(gulp.dest('.tmp/scripts'))
+    .pipe(gulp.dest(wa_mode ? 'dist_wa/scripts' : '.tmp/scripts'))
     .pipe(reload({stream: true}));
 });
 <% } -%>
@@ -63,21 +74,34 @@ gulp.task('lint:test', () => {
     .pipe(gulp.dest('test/spec'));
 });
 
+var njkEnvironment = function(environment) {
+  // environment.addFilter('slug', function(str) {
+  //   return str && str.replace(/\s/g, '-', str).toLowerCase();
+  // });
+
+  environment.addGlobal('wa_mode', wa_mode)
+  environment.addGlobal('dev', dev)
+}
 
 gulp.task('nunjucks', () => {
-  return gulp.src('app/*.njk')
+  var njkSrc = wa_mode ? ['app/*.njk', 'app/templates_wa/*.njk'] : 'app/*.njk';
+  return gulp.src(njkSrc)
     .pipe($.plumber())
     .pipe($.nunjucksRender({
-      path: 'app'
+      path: 'app',
+      manageEnv: njkEnvironment
     }))
     .pipe($.cached('njkCache'))
     .pipe($.print(function(filepath) {
-      return "njk compiled: " + filepath;
+      return "NJK compiled: " + filepath;
     }))
-    .pipe(gulp.dest('.tmp'))
-    .pipe($.htmlhint())
-    .pipe($.htmlhint.reporter())
-    .pipe(reload({stream: true}));
+    .pipe($.if(!dev, $.replace('../images/', 'images/')))
+    .pipe($.if(wa_mode, $.replace('images/', '{$wa_theme_url}images/')))
+    .pipe(gulp.dest(wa_mode ? 'dist_wa' : '.tmp'))
+    .pipe($.if(!wa_mode,
+      $.htmlhint()))
+    .pipe($.if(!wa_mode,
+      $.htmlhint.reporter()));
 });
 
 <% if (includeBabel) { -%>
@@ -87,20 +111,19 @@ gulp.task('html', ['nunjucks', 'styles'], () => {
 <% } -%>
   return gulp.src(['app/*.html', '.tmp/*.html'])
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
-    .pipe($.if('*.css', $.cached('CSScache')))
-    .pipe($.if('*.js', $.cached('JScache')))
+    .pipe($.if( /.*\.(css|js)$/, $.cached('CSSandJScache')))
     .pipe($.if('*.css', $.print(function(filepath) {
       return "CSS combined: " + filepath;
     })))
     .pipe($.if('*.js', $.print(function(filepath) {
       return "JS compiled: " + filepath;
     })))
-    .pipe($.if('*/main.css', $.replace('../../images/', '../images/')))
-    .pipe($.if('*.html', $.replace('../images/', 'images/')))
-    .pipe($.if('index.html', critical({
+
+    .pipe($.if('index.html',
+      critical({
       inline: true,
       minify: true,
-      base: 'dist/',
+        base: 'dist',
       //width: 320,
       //height: 480
       dimensions: [{
@@ -166,6 +189,7 @@ gulp.task('serve', () => {
       notify: false,
       port: 9000,
       server: {
+        index: "home.html",
         baseDir: ['.tmp', 'app'],
         routes: {
           '/bower_components': 'bower_components'
@@ -182,7 +206,7 @@ gulp.task('serve', () => {
       'app/images/**/*',
     ]).on('change', reload);
 
-  gulp.watch('app/**/*.njk', ['nunjucks']);
+  gulp.watch('app/**/*.njk', ['nunjucks', reload]);
   gulp.watch('app/sprites/*', ['sprites']);
   gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
 <% if (includeBabel) { -%>
@@ -190,6 +214,31 @@ gulp.task('serve', () => {
 <% } -%>
     gulp.watch('bower.json', ['wiredep', 'bowerFonts']);
   });
+});
+
+gulp.task('set_wa_mode', () => {
+  dev = false;
+  wa_mode = true;
+});
+
+gulp.task('wa_serve', ['set_wa_mode'], () => {
+  runSequence(['nunjucks', 'styles', 'scripts']);
+
+  gulp.watch('app/**/*.njk', ['nunjucks']);
+  gulp.watch('app/styles/**/*.scss', ['styles']);
+  gulp.watch('app/scripts/**/*.js', ['scripts']);
+});
+
+gulp.task('wa_html', ['set_wa_mode'], () => {
+  runSequence('nunjucks');
+});
+
+gulp.task('wa_styles', ['set_wa_mode'], () => {
+  runSequence('styles');
+});
+
+gulp.task('wa_js', ['set_wa_mode'], () => {
+  runSequence('scripts');
 });
 
 gulp.task('serve:dist', ['default'], () => {
@@ -271,6 +320,6 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
 gulp.task('default', () => {
   return new Promise(resolve => {
     dev = false;
-    runSequence(['clean', 'wiredep'], 'build' resolve);
+    runSequence(['clean', 'wiredep'], 'build', resolve);
   });
 });
