@@ -129,7 +129,7 @@ gulp.task('html', ['nunjucks', 'styles'], () => {
           height: 320,
           width: 480
         }],
-        pathPrefix: './' ,
+        pathPrefix: './',
         ignore: ['@font-face']
       })))
     .pipe(gulp.dest('dist'));
@@ -218,11 +218,11 @@ gulp.task('set_wa_mode', () => {
 });
 
 gulp.task('wa_serve', ['set_wa_mode'], () => {
-  runSequence(['nunjucks', 'styles', 'scripts']);
+  runSequence(['nunjucks', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>]);
 
   gulp.watch('app/**/*.njk', ['nunjucks']);
-  gulp.watch('app/styles/**/*.scss', ['styles']);
-  gulp.watch('app/scripts/**/*.js', ['scripts']);
+  gulp.watch('app/styles/**/*.scss', ['styles']);<% if (includeBabel) { -%>
+  gulp.watch('app/scripts/**/*.js', ['scripts']);<% } -%>
 });
 
 gulp.task('wa_html', ['set_wa_mode'], () => {
@@ -232,10 +232,10 @@ gulp.task('wa_html', ['set_wa_mode'], () => {
 gulp.task('wa_styles', ['set_wa_mode'], () => {
   runSequence('styles');
 });
-
+<% if (includeBabel) { -%>
 gulp.task('wa_js', ['set_wa_mode'], () => {
   runSequence('scripts');
-});
+});<% } -%>
 
 gulp.task('serve:dist', ['default'], () => {
   browserSync.init({
