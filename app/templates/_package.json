@@ -11,26 +11,19 @@
     "critical": "^0.8.0",
     "del": "^2.2.0",
     "gulp": "^3.9.0",
-    "gulp-autoprefixer": "^3.0.1",
-    <% if (includeBabel) { %>
-    "gulp-babel": "^6.1.1",
-    <% } %>
+    "gulp-autoprefixer": "^3.0.1",<% if (includeBabel) { %>
+    "gulp-babel": "^6.1.1",<% } %>
     "gulp-cache": "^0.4.2",
     "gulp-cached": "^1.1.0",
-    "gulp-eslint": "^3.0.0",
-    <% if (includeSass) { %>
-    "gulp-filter": "^4.0.0",
-    <% } %>
+    "gulp-eslint": "^3.0.0",<% if (includeSass) { %>
+    "gulp-filter": "^4.0.0",<% } %>
     "gulp-htmlhint": "^0.3.1",
     "gulp-if": "^2.0.2",
     "gulp-imagemin": "^3.0.1",
     "gulp-load-plugins": "^1.2.4",
-    "gulp-nunjucks-render": "^2.0.0",
-    <% if (includeBabel || includeSass) { %>
-    "gulp-plumber": "^1.0.1",
-    <% } if (includeSass) { %>
-    "gulp-sass": "^2.0.0",
-    <% } %>
+    "gulp-nunjucks-render": "^2.0.0",<% if (includeBabel || includeSass) { %>
+    "gulp-plumber": "^1.0.1",<% } if (includeSass) { %>
+    "gulp-sass": "^2.0.0",<% } %>
     "gulp-preprocess": "^2.0.0",
     "gulp-print": "^2.0.1",
     "gulp-replace": "^0.5.4",
@@ -44,10 +37,8 @@
     "wiredep": "^4.0.0"
   },
   "eslintConfig": {
-    "env": {
-      <% if (includeBabel) { %>
-      "es6": true,
-      <% } %>
+    "env": {<% if (includeBabel) { %>
+      "es6": true,<% } %>
       "node": true,
       "browser": true
     },

@@ -287,6 +287,10 @@ module.exports = generators.Base.extend({
     misc: function () {
       mkdirp('app/images');
       mkdirp('app/fonts');
+      mkdirp('app/sprites');
+      mkdirp('app/templates');
+      mkdirp('app/templates_wa');
+      mkdirp('psd');
     }
   },
 
