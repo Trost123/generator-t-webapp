@@ -17,8 +17,8 @@ var wa_mode = false;
 gulp.task('styles', () => {
   var conn = ftp.create( {
     host:     'kinohata.ftp.ukraine.com.ua',
-    user:     'kinohata_tehavto',
-    password: 'dqvtrk94',
+    user:     'ftpUserName',
+    password: 'ftpPassword',
     parallel: 10,
   } );
   <% if (includeSass) { %>
@@ -97,7 +97,8 @@ gulp.task('nunjucks', () => {
     .pipe($.if(!wa_mode,
       $.htmlhint()))
     .pipe($.if(!wa_mode,
-      $.htmlhint.reporter()));
+      $.htmlhint.reporter()))
+    .pipe(reload({stream: true}));
 });
 
 <% if (includeBabel) { -%>
@@ -202,7 +203,7 @@ gulp.task('serve', () => {
       'app/images/**/*',
     ]).on('change', reload);
 
-  gulp.watch('app/**/*.njk', ['nunjucks', reload]);
+  gulp.watch('app/**/*.njk', ['nunjucks']);
   gulp.watch('app/sprites/*', ['sprites']);
   gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
 <% if (includeBabel) { -%>
@@ -218,11 +219,9 @@ gulp.task('set_wa_mode', () => {
 });
 
 gulp.task('wa_serve', ['set_wa_mode'], () => {
-  runSequence(['nunjucks', 'styles'<% if (includeBabel) { %>, 'scripts'<% } %>]);
+  runSequence('styles');
 
-  gulp.watch('app/**/*.njk', ['nunjucks']);
-  gulp.watch('app/styles/**/*.scss', ['styles']);<% if (includeBabel) { -%>
-  gulp.watch('app/scripts/**/*.js', ['scripts']);<% } -%>
+  gulp.watch('app/styles/**/*.scss', ['styles']);
 });
 
 gulp.task('wa_html', ['set_wa_mode'], () => {
