@@ -289,7 +289,7 @@ gulp.task('wiredep', () => {<% if (includeSass) { %>
 <% } %>
   gulp.src('app/templates/*.njk')
     .pipe(wiredep({<% if (includeBootstrap) { if (includeSass) { %>
-      exclude: ['bootstrap-sass'],<% } else { %>
+      exclude: ['bootstrap<% if (legacyBootstrap) { %>-sass<% } %>'],<% } else { %>
       exclude: ['bootstrap.js'],<% }} %>
       ignorePath: /^(\.\.\/)*\.\./,
        fileTypes: {
