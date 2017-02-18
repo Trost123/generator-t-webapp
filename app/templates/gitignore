@@ -4,3 +4,4 @@ dist_wa
 .tmp
 bower_components
 test/bower_components
+/.idea/workspace.xml

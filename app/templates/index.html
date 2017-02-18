@@ -9,16 +9,16 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <!-- Place favicon.ico in the root directory -->
 
-    <!-- build:css styles/vendor.css -->
+    <!-- build:css css/vendor.css -->
     <!-- bower:css -->
     <!-- endbower -->
     <!-- endbuild -->
 
-    <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
+    <!-- build:css css/main.css -->
+    <link rel="stylesheet" href="css/main.css">
     <!-- endbuild -->
     <% if (includeModernizr) { %>
-    <!-- build:js scripts/vendor/modernizr.js -->
+    <!-- build:js js/vendor/modernizr.js -->
     <script src="/bower_components/modernizr/modernizr.js"></script>
     <!-- endbuild --><% } %>
   </head>
@@ -91,19 +91,19 @@
       ga('create','UA-XXXXX-X');ga('send','pageview');
     </script>
 
-    <!-- build:js scripts/vendor.js -->
+    <!-- build:js js/vendor.js -->
     <!-- bower:js -->
     <!-- endbower -->
     <!-- endbuild -->
     <% if (includeBootstrap) { %>
-    <!-- build:js scripts/plugins.js -->
+    <!-- build:js js/plugins.js -->
 <% bsPlugins.forEach(function (plugin) { -%>
     <script src="<%= bsPath + plugin %>.js"></script>
 <% }) -%>
     <!-- endbuild -->
     <% } %>
-    <!-- build:js scripts/main.js -->
-    <script src="scripts/main.js"></script>
+    <!-- build:js js/main.js -->
+    <script src="js/main.js"></script>
     <!-- endbuild -->
   </body>
 </html>

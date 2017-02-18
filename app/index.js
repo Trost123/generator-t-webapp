@@ -69,11 +69,11 @@ module.exports = generators.Base.extend({
       }, {
         name: 'Bootstrap',
         value: 'includeBootstrap',
-        checked: true
+        checked: false
       }, {
         name: 'Modernizr',
         value: 'includeModernizr',
-        checked: true
+        checked: false
       }]
     }, {
       type: 'list',
@@ -97,6 +97,28 @@ module.exports = generators.Base.extend({
       when: function (answers) {
         return answers.features.indexOf('includeBootstrap') === -1;
       }
+    },
+	{
+      type: 'checkbox',
+      name: 'myBowerPackages',
+      message: 'Which bower packages would you like to include?',
+      choices: [{
+        name: 'Neat + Bourbon 5',
+        value: 'neat_and_bourbon',
+        checked: true
+      }, {
+        name: 'Normalize-css',
+        value: 'normalize-css',
+        checked: true
+      }, {
+        name: 'slick-carousel',
+        value: 'slick-carousel',
+        checked: true
+      }, {
+        name: 'lightbox2',
+        value: 'lightbox2',
+        checked: true
+      }]
     }];
 
     return this.prompt(prompts).then(function (answers) {
@@ -113,6 +135,7 @@ module.exports = generators.Base.extend({
       this.includeModernizr = hasFeature('includeModernizr');
       this.legacyBootstrap = answers.legacyBootstrap;
       this.includeJQuery = answers.includeJQuery;
+      this.myBowerPackages = answers.myBowerPackages;
 
     }.bind(this));
   },
@@ -222,13 +245,44 @@ module.exports = generators.Base.extend({
         }
 
       } else if (this.includeJQuery) {
-        bowerJson.dependencies['jquery'] = '~2.1.1';
+        bowerJson.dependencies['jquery'] = '^3.0.0';
       }
 
       if (this.includeModernizr) {
         bowerJson.dependencies['modernizr'] = '~2.8.1';
       }
-
+	  
+	  //my bower components
+	  if (this.myBowerPackages.indexOf('neat_and_bourbon') !== -1) {
+	    bowerJson.dependencies['neat'] = '^2.0.0';
+	    bowerJson.dependencies['bourbon'] = 'v5.0.0.beta.7';
+	  }
+	  
+	 if (this.myBowerPackages.indexOf('normalize-css') !== -1) {
+	   bowerJson.dependencies['normalize-css'] = '^5.0.0';
+	 }
+	 
+	 if (this.myBowerPackages.indexOf('slick-carousel') !== -1) {
+	   bowerJson.dependencies['slick-carousel'] = '^1.6.0';
+	 }
+	 
+	 if (this.myBowerPackages.indexOf('lightbox2') !== -1) {
+	   bowerJson.dependencies['lightbox2'] = '^2.9.0';
+	 }
+	 
+	 
+	 //my bower overrides
+	 if (this.myBowerPackages.indexOf('slick-carousel') !== -1) {
+	   bowerJson.overrides = {
+            'slick-carousel': {
+              'main': [
+                'slick/slick.js',
+                'slick/slick.scss'
+              ]
+            }
+          };
+	 }
+	 
       this.fs.writeJSON('bower.json', bowerJson);
       this.fs.copy(
         this.templatePath('bowerrc'),
@@ -353,7 +407,6 @@ module.exports = generators.Base.extend({
       mkdirp('app/fonts');
       mkdirp('app/sprites');
       mkdirp('app/templates');
-      mkdirp('app/templates_wa');
       mkdirp('psd');
     }
   },
