@@ -119,23 +119,23 @@ gulp.task('html', ['nunjucks', 'css'], () => {
       return "JS compiled: " + filepath;
     })))
 
-    .pipe($.if('index.html',
-      critical({
-        inline: true,
-        minify: true,
-        base: 'dist',
-        //width: 320,
-        //height: 480
-        dimensions: [{
-          height: 900,
-          width: 1200
-        }, {
-          height: 320,
-          width: 480
-        }],
-        pathPrefix: './',
-        ignore: ['@font-face']
-      })))
+    //.pipe($.if('index.html',
+    //  critical({
+    //    inline: true,
+    //    minify: true,
+    //    base: 'dist',
+    //    //width: 320,
+    //    //height: 480
+    //    dimensions: [{
+    //      height: 900,
+    //      width: 1200
+    //    }, {
+    //      height: 320,
+    //      width: 480
+    //    }],
+    //    pathPrefix: './',
+    //    ignore: ['@font-face']
+    //  })))
     .pipe(gulp.dest('dist'));
 });
 
