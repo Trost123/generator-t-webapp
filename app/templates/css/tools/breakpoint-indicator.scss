@@ -1,0 +1,33 @@
+html::after {
+  content: "Default";
+  right: 10px;
+  position: fixed;
+  bottom: 10px;
+  color: white;
+  background: rgba(0, 0, 0, 0.51);
+  border-radius: 5px;
+  padding: 5px;
+  font-family: sans-serif;
+  border: 1px dashed gray;
+}
+
+@include grid-media($bp-laptop) {
+  html::after {
+    content: "Laptop";
+    color: #c8d6ff;
+  }
+}
+
+@include grid-media($bp-tablet) {
+  html::after {
+    content: "Tablet";
+    color: #95ff94;
+  }
+}
+
+@include grid-media($bp-phone) {
+  html::after {
+    content: "Phone";
+    color: #ff2f23;
+  }
+}

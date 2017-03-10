@@ -1,0 +1,32 @@
+{#<div id="call_back_fullscreen" class="fullscreen-cover is-hidden">
+    <div class="popup-window">
+        <div class="icon-popup-close" onclick="hidePopup('#call_back_fullscreen');"><div></div><div></div></div>
+        <h2>Перезвоним вам сами!</h2>
+        <p>Отправьте нам свое имя и номер телефона и мы  <br>
+            перезвоним Вам в ближайшее время! </p>
+        <form method="post" action="mailme.php">
+            <label><input placeholder="Ваше имя" name="name" value="" type="text" class="un-skew"></label>
+            <label><input type="tel" placeholder="Телефон" name="phone" pattern="^\+\d{12}$|^\d{10}$" title="+380951234567 или 0951234567" value="" required class="un-skew"></label>
+            <input type="hidden" name="subject" value="Запрос перезвонить (из всплывающей формы)">
+            <button value="Отправить" type="submit" name="send_mail" class="green-button">Отправить</button>
+        </form>
+    </div>
+</div>#}
+
+{#
+<div id="feedback_fullscreen" class="fullscreen-cover is-hidden">
+    <div class="popup-window">
+        <div class="icon-popup-close" onclick="hidePopup('#feedback_fullscreen');"><div></div><div></div></div>
+        <h2>Остались вопросы?</h2>
+        <p>Задайте интересующие вас вопросы и мы  <br>
+            ответим Вам в ближайшее время! </p>
+        <form method="post" action="mailme.php">
+            <label><input placeholder="Ваше имя" name="name" value="" type="text" class="un-skew"></label>
+            <label><input type="tel" placeholder="Телефон" name="phone" pattern="^\+\d{12}$|^\d{10}$" title="+380951234567 или 0951234567" value="" class="un-skew"></label>
+            <label><input name="email" placeholder="Ваш e-mail" ></label>
+            <input type="hidden" name="subject" value="Из формы 'Остались вопросы'.">
+            <textarea name="message" cols="30" rows="10" placeholder="Ваше сообщение" required></textarea>
+            <button value="Отправить" type="submit" name="send_mail" class="green-button">Отправить</button>
+        </form>
+    </div>
+</div>#}

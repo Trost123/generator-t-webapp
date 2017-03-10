@@ -330,6 +330,10 @@ module.exports = generators.Base.extend({
           legacyBootstrap: this.legacyBootstrap
         }
       );
+	  
+	  this.fs.copy(
+        this.templatePath('css'),
+        this.destinationPath('app/css'));
     },
 
     scripts: function () {
@@ -387,8 +391,8 @@ module.exports = generators.Base.extend({
       }
 
       this.fs.copyTpl(
-        this.templatePath('index.html'),
-        this.destinationPath('app/index.html'),
+        this.templatePath('_default.njk'),
+        this.destinationPath('app/templates/_default.njk'),
         {
           appname: this.appname,
           includeSass: this.includeSass,
@@ -400,6 +404,14 @@ module.exports = generators.Base.extend({
           bsPlugins: bsPlugins
         }
       );
+	  
+	  this.fs.copy(
+        this.templatePath('templates'),
+        this.destinationPath('app/templates'));
+			  
+	  this.fs.copy(
+        this.templatePath('index.njk'),
+        this.destinationPath('app/index.njk'));
     },
 
     misc: function () {
@@ -439,7 +451,20 @@ module.exports = generators.Base.extend({
       directory: 'bower_components',
       exclude: ['bootstrap-sass', 'bootstrap.js'],
       ignorePath: /^(\.\.\/)*\.\./,
-      src: 'app/index.html'
+	  fileTypes: {
+         njk: {
+           block: /(([ \t]*)<!--\s*bower:*(\S*)\s*-->)(\n|\r|.)*?(<!--\s*endbower\s*-->)/gi,
+           detect: {
+             js: /<script.*src=['"]([^'"]+)/gi,
+             css: /<link.*href=['"]([^'"]+)/gi
+           },
+           replace: {
+             js: '<script src="{{filePath}}"></script>',
+             css: '<link rel="stylesheet" href="{{filePath}}" />'
+           }
+         }
+       },
+      src: 'app/templates/_default.njk'
     });
 
     if (this.includeSass) {
