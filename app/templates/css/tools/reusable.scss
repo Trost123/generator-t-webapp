@@ -55,6 +55,10 @@ ul {
   z-index: 1;
   position: absolute;
   cursor: pointer;
+
+  &.slick-disabled {
+    opacity: 0.3;
+  }
 }
 
 .slick-slide:focus, input:focus, button:focus {

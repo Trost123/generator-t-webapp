@@ -140,8 +140,7 @@ gulp.task('html', ['nunjucks', 'css'], () => {
 });
 
 gulp.task('images', () => {
-  return gulp.src(require('main-bower-files')('**/*.{png,gif,jpg}', function (err) {})
-    .concat(['app/images/**/*']))
+  return gulp.src('app/images/**/*')
     .pipe($.cache($.imagemin()))
     .pipe(gulp.dest('dist/images'));
 });
@@ -163,10 +162,15 @@ gulp.task('sprites', () => {
 
 gulp.task('bowerFonts', () => {
   return gulp.src(require('main-bower-files')('**/*.{eot,svg,ttf,woff,woff2}', function (err) {}))
-    .pipe(gulp.dest('app/fonts/bowerFonts'))
+    .pipe(gulp.dest('app/fonts/bowerFonts'));
 });
 
-gulp.task('fonts', ['bowerFonts'], () => {
+gulp.task('bowerImages', () => {
+  return gulp.src(require('main-bower-files')('**/*.{png,gif,jpg}', function (err) {}))
+    .pipe(gulp.dest('app/images/'));
+});
+
+gulp.task('fonts', () => {
   return gulp.src('app/fonts/**/*')
     .pipe(gulp.dest('dist/fonts'));
 });
@@ -175,6 +179,8 @@ gulp.task('extras', () => {
   return gulp.src([
     'app/*',
     '!app/*.html',
+    '!app/sprites/',
+    '!app/templates/',
     '!app/*.njk'
   ], {
     dot: true
@@ -184,7 +190,7 @@ gulp.task('extras', () => {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist', 'dist_wa']));
 
 gulp.task('serve', () => {
-  runSequence(['wiredep'], ['nunjucks', 'css'<% if (includeBabel) { %>, 'js'<% } %>, 'bowerFonts'], () => {
+  runSequence(['nunjucks', 'css'], () => {
     browserSync.init({
       notify: false,
       port: 9000,
@@ -212,7 +218,7 @@ gulp.task('serve', () => {
 <% if (includeBabel) { -%>
   gulp.watch('app/js/**/*.js', ['js']);
 <% } -%>
-  gulp.watch('bower.json', ['wiredep', 'bowerFonts']);
+  gulp.watch('bower.json', ['wiredep']);
   });
 });
 
@@ -279,7 +285,7 @@ gulp.task('serve:test', () => {
 });
 
 // inject bower components
-gulp.task('wiredep', () => {<% if (includeSass) { %>
+gulp.task('wiredep', ['bowerFonts', 'bowerImages'] , () => {<% if (includeSass) { %>
   gulp.src('app/css/*.scss')
     .pipe($.filter(file => file.stat && file.stat.size))
     .pipe(wiredep({
