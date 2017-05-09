@@ -1,8 +1,9 @@
 html::after {
+  z-index: 20;
   content: "Default";
-  right: 10px;
+  right: 50px;
   position: fixed;
-  bottom: 10px;
+  top: 50px;
   color: white;
   background: rgba(0, 0, 0, 0.51);
   border-radius: 5px;
@@ -11,21 +12,21 @@ html::after {
   border: 1px dashed gray;
 }
 
-@include grid-media($bp-laptop) {
+@media (max-width: $bp-laptop) {
   html::after {
     content: "Laptop";
     color: #c8d6ff;
   }
 }
 
-@include grid-media($bp-tablet) {
+@media (max-width: $bp-tablet) {
   html::after {
     content: "Tablet";
     color: #95ff94;
   }
 }
 
-@include grid-media($bp-phone) {
+@media (max-width: $bp-phone) {
   html::after {
     content: "Phone";
     color: #ff2f23;

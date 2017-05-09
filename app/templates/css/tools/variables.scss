@@ -1,6 +1,5 @@
-$content-width-max: 1040px; //1220 or 1040
+$content-max-width: 1050px; //1220 or 1040
 
-$bp-laptop: (media: '(max-width: 1039px)');
-$bp-tablet: (media: '(max-width: 859px)');
-$bp-phone: (media: '(max-width: 599px)');
-
+$bp-laptop: 1049px;
+$bp-tablet: 859px;
+$bp-phone: 599px;
