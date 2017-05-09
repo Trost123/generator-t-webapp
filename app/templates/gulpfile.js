@@ -7,6 +7,7 @@ const wiredep = require('wiredep').stream;
 const runSequence = require('run-sequence');
 const critical = require('critical').stream;
 const ftp = require( 'vinyl-ftp' );
+const { gulpSassError } = require('gulp-sass-error');
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -30,7 +31,7 @@ gulp.task('css', () => {
       outputStyle: 'expanded',
       precision: 10,
       includePaths: ['.']
-    }).on('error', $.sass.logError))<% } else { %>
+    }).on('error', gulpSassError(!dev)))<% } else { %>
   return gulp.src('app/css/*.css')
     .pipe($.if(dev, $.sourcemaps.init()))<% } %>
     .pipe($.if(!dev, $.replace('../../images/', '../images/')))
@@ -93,11 +94,7 @@ gulp.task('nunjucks', () => {
     }))
     .pipe($.if(!dev, $.replace('../images/', 'images/')))
     .pipe($.if(wa_mode, $.replace('images/', '{$wa_theme_url}images/')))
-    .pipe(gulp.dest(wa_mode ? 'dist_wa' : '.tmp'))
-    .pipe($.if(!wa_mode,
-      $.htmlhint()))
-    .pipe($.if(!wa_mode,
-      $.htmlhint.reporter()));
+    .pipe(gulp.dest(wa_mode ? 'dist_wa' : '.tmp'));
 });
 
 gulp.task('njkRefresh', ['nunjucks'], () => {
@@ -118,6 +115,12 @@ gulp.task('html', ['nunjucks', 'css'], () => {
     .pipe($.if('*.js', $.print(function(filepath) {
       return "JS compiled: " + filepath;
     })))
+    .pipe($.if(!wa_mode,
+      $.if('*.html',
+        $.htmlhint())))
+    .pipe($.if(!wa_mode,
+      $.if('*.html',
+        $.htmlhint.failReporter())))
 
     //.pipe($.if('index.html',
     //  critical({

@@ -23,7 +23,8 @@
     "gulp-load-plugins": "^1.2.4",
     "gulp-nunjucks-render": "^2.0.0",<% if (includeBabel || includeSass) { %>
     "gulp-plumber": "^1.0.1",<% } if (includeSass) { %>
-    "gulp-sass": "^3.0.0",<% } %>
+    "gulp-sass": "^3.0.0",
+    "gulp-sass-error": "^1.0.5",<% } %>
     "gulp-preprocess": "^2.0.0",
     "gulp-print": "^2.0.1",
     "gulp-replace": "^0.5.4",
