@@ -83,7 +83,7 @@ var njkEnvironment = function(environment) {
 gulp.task('nunjucks', () => {
   var njkSrc = wa_mode ? ['app/*.njk', 'app/templates_wa/*.njk'] : 'app/*.njk';
   return gulp.src(njkSrc)
-    .pipe($.plumber())
+    .pipe($.if(dev,$.plumber()))
     .pipe($.nunjucksRender({
       path: 'app',
       manageEnv: njkEnvironment
@@ -94,6 +94,14 @@ gulp.task('nunjucks', () => {
     }))
     .pipe($.if(!dev, $.replace('../images/', 'images/')))
     .pipe($.if(wa_mode, $.replace('images/', '{$wa_theme_url}images/')))
+    .pipe($.if(!wa_mode,
+      $.if('*.html',
+        $.htmlhint())))
+    .pipe($.if(!wa_mode,
+      $.if('*.html',
+        $.if(dev,
+        $.htmlhint.reporter(),
+          $.htmlhint.failReporter()))))
     .pipe(gulp.dest(wa_mode ? 'dist_wa' : '.tmp'));
 });
 
@@ -115,12 +123,6 @@ gulp.task('html', ['nunjucks', 'css'], () => {
     .pipe($.if('*.js', $.print(function(filepath) {
       return "JS compiled: " + filepath;
     })))
-    .pipe($.if(!wa_mode,
-      $.if('*.html',
-        $.htmlhint())))
-    .pipe($.if(!wa_mode,
-      $.if('*.html',
-        $.htmlhint.failReporter())))
 
     //.pipe($.if('index.html',
     //  critical({
@@ -325,6 +327,6 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
 gulp.task('default', () => {
   return new Promise(resolve => {
     dev = false;
-    runSequence(['clean', 'wiredep'], 'build', resolve);
+    runSequence('clean', 'wiredep', 'build', resolve);
   });
 });
